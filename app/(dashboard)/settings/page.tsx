@@ -48,8 +48,8 @@ export default function SettingsPage() {
     }
     try {
       const n = new Notification("SWRK CRM", {
-        body: "Test notification - push is working!",
-        icon: "/favicon.ico",
+        body: "Test notification — push is working!",
+        icon: "/logo-square-light.png",
       })
       setTimeout(() => n.close(), 5000)
       toast.success("Test notification sent!")

@@ -6,8 +6,8 @@ self.addEventListener("push", function (event) {
 
     const options = {
       body: data.body,
-      icon: "/favicon.ico",
-      badge: "/favicon.ico",
+      icon: "/logo-square-light.png",
+      badge: "/logo-square-light.png",
       data: {
         url: data.url || "/pipeline",
       },

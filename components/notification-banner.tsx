@@ -21,6 +21,20 @@ async function subscribeUser() {
 
   try {
     const registration = await navigator.serviceWorker.register("/sw.js")
+
+    // Wait for the service worker to be fully active before subscribing
+    if (!registration.active || navigator.serviceWorker.controller === null) {
+      await new Promise<void>((resolve) => {
+        if (registration.installing) {
+          registration.installing.addEventListener("statechange", () => {
+            if (registration.active) resolve()
+          })
+        } else {
+          resolve()
+        }
+      })
+    }
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(
