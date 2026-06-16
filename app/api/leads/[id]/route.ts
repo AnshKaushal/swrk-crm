@@ -8,18 +8,26 @@ import { AuditLog } from "@/lib/models/AuditLog"
 import { PushSubscription as PushSubModel } from "@/lib/models/PushSubscription"
 import { webpush } from "@/lib/webpush"
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
   await connectDB()
   const body = await request.json()
 
   const lead = await Lead.findById(id)
-  if (!lead) return NextResponse.json({ error: "Lead not found" }, { status: 404 })
+  if (!lead)
+    return NextResponse.json({ error: "Lead not found" }, { status: 404 })
 
-  if (session.user.role === "employee" && lead.assignedTo.toString() !== session.user.id) {
+  if (
+    session.user.role === "employee" &&
+    lead.assignedTo.toString() !== session.user.id
+  ) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
@@ -53,7 +61,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
           amount: Math.round(value * 0.3),
           currency,
           status: "pending" as const,
-          milestoneDescription: "Milestone payment (30%) — set trigger description",
+          milestoneDescription:
+            "Milestone payment (30%) - set trigger description",
         },
         {
           leadId: lead._id,
@@ -115,7 +124,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   return NextResponse.json(populatedLead)
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   const session = await auth()
   if (!session || session.user.role !== "super_admin") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })

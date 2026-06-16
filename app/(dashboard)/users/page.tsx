@@ -64,7 +64,8 @@ export default function UsersPage() {
   async function handleDelete(user: User) {
     const ok = await confirm({
       title: `Delete ${user.name}?`,
-      description: "This action cannot be undone. The user will lose access immediately.",
+      description:
+        "This action cannot be undone. The user will lose access immediately.",
       confirmLabel: "Delete",
       cancelLabel: "Cancel",
     })
@@ -121,24 +122,35 @@ export default function UsersPage() {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user._id}>
-                <TableCell className="text-xs font-medium">{user.name}</TableCell>
+                <TableCell className="text-xs font-medium">
+                  {user.name}
+                </TableCell>
                 <TableCell className="text-xs">{user.email}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5">
-                    <span className={`size-1.5 rounded-full ${ROLE_COLORS[user.role] || "bg-gray-500"}`} />
-                    <span className="text-xs capitalize">{user.role.replace("_", " ")}</span>
+                    <span
+                      className={`size-1.5 rounded-full ${ROLE_COLORS[user.role] || "bg-gray-500"}`}
+                    />
+                    <span className="text-xs capitalize">
+                      {user.role.replace("_", " ")}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
-                  {user.assignedManager?.name || "—"}
+                  {user.assignedManager?.name || "-"}
                 </TableCell>
                 <TableCell>
                   {user.mustChangePassword ? (
-                    <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-500">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] text-amber-500 border-amber-500"
+                    >
                       Password reset required
                     </Badge>
                   ) : (
-                    <span className="text-xs text-muted-foreground">Active</span>
+                    <span className="text-xs text-muted-foreground">
+                      Active
+                    </span>
                   )}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
@@ -146,7 +158,11 @@ export default function UsersPage() {
                 </TableCell>
                 <TableCell>
                   {user.role !== "super_admin" && (
-                    <Button variant="ghost" size="icon-xs" onClick={() => handleDelete(user)}>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      onClick={() => handleDelete(user)}
+                    >
                       <IconTrash className="size-3 text-destructive" />
                     </Button>
                   )}

@@ -15,18 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { IconArrowLeft, IconTrash, IconCurrencyDollar, IconCurrencyRupee, IconSend, IconHistory } from "@tabler/icons-react"
+import {
+  IconArrowLeft,
+  IconTrash,
+  IconCurrencyDollar,
+  IconCurrencyRupee,
+  IconSend,
+  IconHistory,
+} from "@tabler/icons-react"
 import Link from "next/link"
 
 const STAGES = [
@@ -117,7 +119,10 @@ export default function LeadDetailPage() {
   const fetchLead = useCallback(async () => {
     try {
       const res = await fetch("/api/leads")
-      if (!res.ok) { router.push("/pipeline"); return }
+      if (!res.ok) {
+        router.push("/pipeline")
+        return
+      }
       const leads = await res.json()
       const found = leads.find((l: Lead) => l._id === params.id)
       if (found) {
@@ -227,7 +232,10 @@ export default function LeadDetailPage() {
 
     try {
       const res = await fetch(`/api/leads/${lead._id}`, { method: "DELETE" })
-      if (!res.ok) { toast.error("Failed to delete"); return }
+      if (!res.ok) {
+        toast.error("Failed to delete")
+        return
+      }
       toast.success("Lead deleted")
       router.push("/pipeline")
     } catch {
@@ -247,7 +255,10 @@ export default function LeadDetailPage() {
         body: JSON.stringify({ text: commentText.trim() }),
       })
 
-      if (!res.ok) { toast.error("Failed to add comment"); return }
+      if (!res.ok) {
+        toast.error("Failed to add comment")
+        return
+      }
 
       const newComment = await res.json()
       setComments((prev) => [newComment, ...prev])
@@ -260,16 +271,24 @@ export default function LeadDetailPage() {
     }
   }
 
-  async function handlePaymentUpdate(paymentId: string, updates: Record<string, any>) {
+  async function handlePaymentUpdate(
+    paymentId: string,
+    updates: Record<string, any>,
+  ) {
     try {
       const res = await fetch("/api/payments", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentId, ...updates }),
       })
-      if (!res.ok) { toast.error("Failed to update payment"); return }
+      if (!res.ok) {
+        toast.error("Failed to update payment")
+        return
+      }
       const updated = await res.json()
-      setPayments((prev) => prev.map((p) => (p._id === paymentId ? { ...p, ...updated } : p)))
+      setPayments((prev) =>
+        prev.map((p) => (p._id === paymentId ? { ...p, ...updated } : p)),
+      )
       toast.success("Payment updated")
     } catch {
       toast.error("Failed to update payment")
@@ -306,7 +325,12 @@ export default function LeadDetailPage() {
           </Link>
         </Button>
         {canDelete && (
-          <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDelete}
+            className="text-destructive"
+          >
             <IconTrash className="size-3.5" />
           </Button>
         )}
@@ -336,11 +360,16 @@ export default function LeadDetailPage() {
             </div>
             <div className="space-y-1">
               <p className="text-[10px] text-muted-foreground">Value</p>
-              <p className="text-xs">{currencySymbol}{lead.value.toLocaleString("en-US")}</p>
+              <p className="text-xs">
+                {currencySymbol}
+                {lead.value.toLocaleString("en-US")}
+              </p>
             </div>
             <div className="space-y-1">
               <p className="text-[10px] text-muted-foreground">Created</p>
-              <p className="text-xs">{new Date(lead.createdAt).toLocaleDateString()}</p>
+              <p className="text-xs">
+                {new Date(lead.createdAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
 
@@ -354,7 +383,9 @@ export default function LeadDetailPage() {
                     <Label className="text-xs">Name</Label>
                     <Input
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
                       className="h-8 text-xs"
                     />
                   </div>
@@ -362,7 +393,9 @@ export default function LeadDetailPage() {
                     <Label className="text-xs">Company</Label>
                     <Input
                       value={form.company}
-                      onChange={(e) => setForm({ ...form, company: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, company: e.target.value })
+                      }
                       className="h-8 text-xs"
                     />
                   </div>
@@ -372,7 +405,9 @@ export default function LeadDetailPage() {
                     <Label className="text-xs">Email</Label>
                     <Input
                       value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
                       className="h-8 text-xs"
                     />
                   </div>
@@ -380,7 +415,9 @@ export default function LeadDetailPage() {
                     <Label className="text-xs">Phone</Label>
                     <Input
                       value={form.phone}
-                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
                       className="h-8 text-xs"
                     />
                   </div>
@@ -396,7 +433,9 @@ export default function LeadDetailPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {STAGES.map((s) => (
-                        <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>
+                        <SelectItem key={s.key} value={s.key}>
+                          {s.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -407,7 +446,9 @@ export default function LeadDetailPage() {
                     <Input
                       type="number"
                       value={form.value}
-                      onChange={(e) => setForm({ ...form, value: e.target.value })}
+                      onChange={(e) =>
+                        setForm({ ...form, value: e.target.value })
+                      }
                       className="h-8 text-xs"
                     />
                   </div>
@@ -431,7 +472,9 @@ export default function LeadDetailPage() {
                   <Label className="text-xs">Notes</Label>
                   <Textarea
                     value={form.notes}
-                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, notes: e.target.value })
+                    }
                     className="text-xs min-h-[80px]"
                   />
                 </div>
@@ -458,23 +501,36 @@ export default function LeadDetailPage() {
             <div className="space-y-0">
               {auditLog.map((entry, idx) => {
                 const stageLabels: Record<string, string> = {
-                  new: "New", contacted: "Contacted", qualified: "Qualified",
-                  proposal: "Proposal", negotiation: "Negotiation",
-                  closed_won: "Closed Won", closed_lost: "Closed Lost",
+                  new: "New",
+                  contacted: "Contacted",
+                  qualified: "Qualified",
+                  proposal: "Proposal",
+                  negotiation: "Negotiation",
+                  closed_won: "Closed Won",
+                  closed_lost: "Closed Lost",
                 }
                 return (
-                  <div key={entry._id} className="relative flex gap-3 pb-4 last:pb-0">
+                  <div
+                    key={entry._id}
+                    className="relative flex gap-3 pb-4 last:pb-0"
+                  >
                     {idx < auditLog.length - 1 && (
                       <div className="absolute left-[7px] top-4 bottom-0 w-px bg-border" />
                     )}
                     <div className="mt-1 size-[14px] shrink-0 rounded-full bg-muted-foreground/30" />
                     <div className="flex-1 min-w-0">
                       <p className="text-xs">
-                        <span className="font-medium">{entry.userId?.name}</span>
-                        {" "}moved from{" "}
-                        <span className="font-medium">{stageLabels[entry.oldStage] || entry.oldStage}</span>
-                        {" "}to{" "}
-                        <span className="font-medium">{stageLabels[entry.newStage] || entry.newStage}</span>
+                        <span className="font-medium">
+                          {entry.userId?.name}
+                        </span>{" "}
+                        moved from{" "}
+                        <span className="font-medium">
+                          {stageLabels[entry.oldStage] || entry.oldStage}
+                        </span>{" "}
+                        to{" "}
+                        <span className="font-medium">
+                          {stageLabels[entry.newStage] || entry.newStage}
+                        </span>
                       </p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">
                         {new Date(entry.createdAt).toLocaleString()}
@@ -488,98 +544,134 @@ export default function LeadDetailPage() {
         </Card>
       )}
 
-      {session?.user?.role === "super_admin" && lead?.stage === "closed_won" && payments.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Payment Timeline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-0">
-              {payments.map((payment, idx) => {
-                const labels: Record<string, string> = {
-                  advance: "Advance (30%)",
-                  milestone: "Milestone (30%)",
-                  completion: "Completion (40%)",
-                }
-                const statusColors: Record<string, string> = {
-                  paid: "bg-emerald-500",
-                  pending: "bg-amber-500",
-                  overdue: "bg-red-500",
-                }
-                const statusLabels: Record<string, string> = {
-                  paid: "Paid",
-                  pending: "Pending",
-                  overdue: "Overdue",
-                }
-                return (
-                  <div key={payment._id} className="relative flex gap-4 pb-6 last:pb-0">
-                    {idx < payments.length - 1 && (
-                      <div className="absolute left-[11px] top-5 bottom-0 w-px bg-border" />
-                    )}
-                    <div className={`mt-1.5 size-[22px] shrink-0 rounded-full ${statusColors[payment.status]} flex items-center justify-center`}>
-                      <span className="text-[10px] font-medium text-white">{payment.percentage}%</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-medium">{labels[payment.type]}</p>
-                        <Badge variant="outline" className={`text-[10px] ${payment.status === "paid" ? "text-emerald-500 border-emerald-500" : payment.status === "overdue" ? "text-red-500 border-red-500" : ""}`}>
-                          {statusLabels[payment.status]}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {payment.currency === "INR" ? "₹" : "$"}{payment.amount.toLocaleString("en-US")}
-                      </p>
-                      {payment.type === "milestone" && (
-                        <div className="mt-2 flex gap-2">
-                          <Input
-                            className="h-7 text-[10px] flex-1"
-                            placeholder="Describe milestone trigger..."
-                            defaultValue={payment.milestoneDescription !== "Milestone payment (30%) — set trigger description" ? payment.milestoneDescription : ""}
-                            onBlur={(e) => {
-                              if (e.target.value.trim() && e.target.value !== payment.milestoneDescription) {
-                                handlePaymentUpdate(payment._id, { milestoneDescription: e.target.value.trim() })
-                              }
-                            }}
-                          />
-                        </div>
+      {session?.user?.role === "super_admin" &&
+        lead?.stage === "closed_won" &&
+        payments.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Payment Timeline</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-0">
+                {payments.map((payment, idx) => {
+                  const labels: Record<string, string> = {
+                    advance: "Advance (30%)",
+                    milestone: "Milestone (30%)",
+                    completion: "Completion (40%)",
+                  }
+                  const statusColors: Record<string, string> = {
+                    paid: "bg-emerald-500",
+                    pending: "bg-amber-500",
+                    overdue: "bg-red-500",
+                  }
+                  const statusLabels: Record<string, string> = {
+                    paid: "Paid",
+                    pending: "Pending",
+                    overdue: "Overdue",
+                  }
+                  return (
+                    <div
+                      key={payment._id}
+                      className="relative flex gap-4 pb-6 last:pb-0"
+                    >
+                      {idx < payments.length - 1 && (
+                        <div className="absolute left-[11px] top-5 bottom-0 w-px bg-border" />
                       )}
-                      <div className="mt-2 flex gap-1.5">
-                        {payment.status === "pending" && (
-                          <Button
-                            size="xs"
+                      <div
+                        className={`mt-1.5 size-[22px] shrink-0 rounded-full ${statusColors[payment.status]} flex items-center justify-center`}
+                      >
+                        <span className="text-[10px] font-medium text-white">
+                          {payment.percentage}%
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="text-xs font-medium">
+                            {labels[payment.type]}
+                          </p>
+                          <Badge
                             variant="outline"
-                            className="text-[10px] h-6"
-                            onClick={() => handlePaymentUpdate(payment._id, { status: "paid" })}
+                            className={`text-[10px] ${payment.status === "paid" ? "text-emerald-500 border-emerald-500" : payment.status === "overdue" ? "text-red-500 border-red-500" : ""}`}
                           >
-                            Mark Paid
-                          </Button>
+                            {statusLabels[payment.status]}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {payment.currency === "INR" ? "₹" : "$"}
+                          {payment.amount.toLocaleString("en-US")}
+                        </p>
+                        {payment.type === "milestone" && (
+                          <div className="mt-2 flex gap-2">
+                            <Input
+                              className="h-7 text-[10px] flex-1"
+                              placeholder="Describe milestone trigger..."
+                              defaultValue={
+                                payment.milestoneDescription !==
+                                "Milestone payment (30%) - set trigger description"
+                                  ? payment.milestoneDescription
+                                  : ""
+                              }
+                              onBlur={(e) => {
+                                if (
+                                  e.target.value.trim() &&
+                                  e.target.value !==
+                                    payment.milestoneDescription
+                                ) {
+                                  handlePaymentUpdate(payment._id, {
+                                    milestoneDescription: e.target.value.trim(),
+                                  })
+                                }
+                              }}
+                            />
+                          </div>
                         )}
-                        {payment.status === "paid" && (
-                          <Button
-                            size="xs"
-                            variant="outline"
-                            className="text-[10px] h-6"
-                            onClick={() => handlePaymentUpdate(payment._id, { status: "pending" })}
-                          >
-                            Revert
-                          </Button>
-                        )}
+                        <div className="mt-2 flex gap-1.5">
+                          {payment.status === "pending" && (
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              className="text-[10px] h-6"
+                              onClick={() =>
+                                handlePaymentUpdate(payment._id, {
+                                  status: "paid",
+                                })
+                              }
+                            >
+                              Mark Paid
+                            </Button>
+                          )}
+                          {payment.status === "paid" && (
+                            <Button
+                              size="xs"
+                              variant="outline"
+                              className="text-[10px] h-6"
+                              onClick={() =>
+                                handlePaymentUpdate(payment._id, {
+                                  status: "pending",
+                                })
+                              }
+                            >
+                              Revert
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       <Card>
         <CardHeader>
           <CardTitle className="text-sm flex items-center gap-2">
             Comments
             {comments.length > 0 && (
-              <Badge variant="outline" className="text-[10px]">{comments.length}</Badge>
+              <Badge variant="outline" className="text-[10px]">
+                {comments.length}
+              </Badge>
             )}
           </CardTitle>
         </CardHeader>
@@ -591,7 +683,11 @@ export default function LeadDetailPage() {
               onChange={(e) => setCommentText(e.target.value)}
               className="h-8 text-xs flex-1"
             />
-            <Button type="submit" size="sm" disabled={commentLoading || !commentText.trim()}>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={commentLoading || !commentText.trim()}
+            >
               <IconSend className="size-3.5" />
             </Button>
           </form>
@@ -606,12 +702,19 @@ export default function LeadDetailPage() {
                 <div key={comment._id} className="flex gap-3">
                   <Avatar className="size-7 shrink-0">
                     <AvatarFallback className="text-[10px]">
-                      {comment.userId?.name?.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "U"}
+                      {comment.userId?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2) || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium">{comment.userId?.name}</span>
+                      <span className="text-xs font-medium">
+                        {comment.userId?.name}
+                      </span>
                       <span className="text-[10px] text-muted-foreground">
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>

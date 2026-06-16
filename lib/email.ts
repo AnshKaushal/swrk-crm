@@ -20,7 +20,7 @@ export async function sendWelcomeEmail(
   await transporter.sendMail({
     from: `"SWRK CRM" <${process.env.SMTP_FROM}>`,
     to: email,
-    subject: "Welcome to SWRK CRM — Your Account Details",
+    subject: "Welcome to SWRK CRM - Your Account Details",
     html: `
       <div style="font-family: monospace; max-width: 480px; margin: 0 auto;">
         <h1>Welcome to SWRK CRM</h1>

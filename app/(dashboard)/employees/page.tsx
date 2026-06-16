@@ -82,10 +82,12 @@ export default function EmployeesPage() {
             <TableBody>
               {employees.map((emp) => (
                 <TableRow key={emp._id}>
-                  <TableCell className="text-xs font-medium">{emp.name}</TableCell>
+                  <TableCell className="text-xs font-medium">
+                    {emp.name}
+                  </TableCell>
                   <TableCell className="text-xs">{emp.email}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
-                    {emp.assignedManager?.name || "—"}
+                    {emp.assignedManager?.name || "-"}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {new Date(emp.createdAt).toLocaleDateString()}

@@ -20,7 +20,8 @@ import { subscribeUser } from "@/components/notification-banner"
 export default function SettingsPage() {
   const { data: session, update } = useSession()
   const router = useRouter()
-  const [notificationStatus, setNotificationStatus] = useState<string>("checking")
+  const [notificationStatus, setNotificationStatus] =
+    useState<string>("checking")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -47,13 +48,15 @@ export default function SettingsPage() {
     }
     try {
       const n = new Notification("SWRK CRM", {
-        body: "Test notification — push is working!",
+        body: "Test notification - push is working!",
         icon: "/favicon.ico",
       })
       setTimeout(() => n.close(), 5000)
       toast.success("Test notification sent!")
     } catch (err) {
-      toast.error("Failed: " + (err instanceof Error ? err.message : "unknown error"))
+      toast.error(
+        "Failed: " + (err instanceof Error ? err.message : "unknown error"),
+      )
     }
   }
 
@@ -120,7 +123,9 @@ export default function SettingsPage() {
       {mustChangePassword && (
         <Card className="border-amber-500">
           <CardHeader>
-            <CardTitle className="text-sm text-amber-500">Password Reset Required</CardTitle>
+            <CardTitle className="text-sm text-amber-500">
+              Password Reset Required
+            </CardTitle>
             <CardDescription className="text-xs">
               You must change your password before you can continue
             </CardDescription>
@@ -140,7 +145,9 @@ export default function SettingsPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="current" className="text-xs">Current Password</Label>
+              <Label htmlFor="current" className="text-xs">
+                Current Password
+              </Label>
               <Input
                 id="current"
                 type="password"
@@ -151,7 +158,9 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new" className="text-xs">New Password</Label>
+              <Label htmlFor="new" className="text-xs">
+                New Password
+              </Label>
               <Input
                 id="new"
                 type="password"
@@ -163,7 +172,9 @@ export default function SettingsPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirm" className="text-xs">Confirm New Password</Label>
+              <Label htmlFor="confirm" className="text-xs">
+                Confirm New Password
+              </Label>
               <Input
                 id="confirm"
                 type="password"
@@ -174,7 +185,12 @@ export default function SettingsPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" size="sm" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="sm"
+              disabled={loading}
+            >
               {loading ? "Changing..." : "Change Password"}
             </Button>
           </form>
@@ -185,7 +201,8 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="text-sm">Notifications</CardTitle>
           <CardDescription className="text-xs">
-            Receive browser push notifications when leads are created, updated, or commented on
+            Receive browser push notifications when leads are created, updated,
+            or commented on
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -215,17 +232,27 @@ export default function SettingsPage() {
             </Badge>
           </div>
           {notificationStatus === "default" && (
-            <Button size="sm" className="w-full text-xs" onClick={handleSubscribe}>
+            <Button
+              size="sm"
+              className="w-full text-xs"
+              onClick={handleSubscribe}
+            >
               Enable Notifications
             </Button>
           )}
           {notificationStatus === "denied" && (
             <p className="text-xs text-muted-foreground">
-              Notifications are blocked. Allow them in your browser site settings, then refresh.
+              Notifications are blocked. Allow them in your browser site
+              settings, then refresh.
             </p>
           )}
           {notificationStatus === "granted" && (
-            <Button size="sm" variant="outline" className="w-full text-xs" onClick={handleTestNotification}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full text-xs"
+              onClick={handleTestNotification}
+            >
               Send Test Notification
             </Button>
           )}
@@ -247,7 +274,9 @@ export default function SettingsPage() {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Role</span>
-            <span className="capitalize">{session?.user?.role?.replace("_", " ")}</span>
+            <span className="capitalize">
+              {session?.user?.role?.replace("_", " ")}
+            </span>
           </div>
         </CardContent>
       </Card>
