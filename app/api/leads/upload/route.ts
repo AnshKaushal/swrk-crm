@@ -50,49 +50,58 @@ export async function POST(request: Request) {
   }
 
   const results = { created: 0, skipped: 0, errors: [] as string[] }
+  const docs: Record<string, unknown>[] = []
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i]
     const rowNum = i + 2
 
-    try {
-      const name = (row.Name || row.name || row["Lead Name"] || "").toString().trim()
-      const company = (row.Company || row.company || "").toString().trim()
+    const name = (row.Name || row.name || row["Lead Name"] || "").toString().trim()
+    const company = (row.Company || row.company || "").toString().trim()
 
-      if (!name || !company) {
-        results.skipped++
-        results.errors.push(`Row ${rowNum}: missing Name or Company`)
-        continue
-      }
-
-      const rawStage = (row.Stage || row.stage || "new").toString().trim().toLowerCase()
-      const stage = STAGE_ALIASES[rawStage] || "new"
-
-      const rawCurrency = (row.Currency || row.currency || "INR").toString().trim().toUpperCase()
-      const currency = VALID_CURRENCIES.includes(rawCurrency) ? rawCurrency : "INR"
-
-      const value = Number(row.Value || row.value || row["Deal Value"] || 0)
-      const email = (row.Email || row.email || "").toString().trim()
-      const phone = (row.Phone || row.phone || "").toString().trim()
-      const notes = (row.Notes || row.notes || "").toString().trim()
-
-      await Lead.create({
-        name,
-        company,
-        email,
-        phone,
-        stage,
-        value: isNaN(value) ? 0 : value,
-        currency,
-        notes,
-        assignedTo: session.user.id,
-        createdBy: session.user.id,
-      })
-
-      results.created++
-    } catch (err: any) {
+    if (!name || !company) {
       results.skipped++
-      results.errors.push(`Row ${rowNum}: ${err.message || "Unknown error"}`)
+      results.errors.push(`Row ${rowNum}: missing Name or Company`)
+      continue
+    }
+
+    const rawStage = (row.Stage || row.stage || "new").toString().trim().toLowerCase()
+    const stage = STAGE_ALIASES[rawStage]
+    if (!stage) {
+      results.skipped++
+      results.errors.push(`Row ${rowNum}: unrecognised stage "${rawStage}"`)
+      continue
+    }
+
+    const rawCurrency = (row.Currency || row.currency || "INR").toString().trim().toUpperCase()
+    if (!VALID_CURRENCIES.includes(rawCurrency)) {
+      results.skipped++
+      results.errors.push(`Row ${rowNum}: unrecognised currency "${rawCurrency}"`)
+      continue
+    }
+
+    const value = Number(row.Value || row.value || row["Deal Value"] || 0)
+
+    docs.push({
+      name,
+      company,
+      email: (row.Email || row.email || "").toString().trim(),
+      phone: (row.Phone || row.phone || "").toString().trim(),
+      stage,
+      value: isNaN(value) ? 0 : value,
+      currency: rawCurrency,
+      notes: (row.Notes || row.notes || "").toString().trim(),
+      assignedTo: session.user.id,
+      createdBy: session.user.id,
+    })
+  }
+
+  if (docs.length > 0) {
+    try {
+      await Lead.insertMany(docs)
+      results.created = docs.length
+    } catch (err: any) {
+      results.errors.push(`Bulk insert failed: ${err.message || "Unknown error"}`)
     }
   }
 

@@ -6,11 +6,36 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { IconArrowLeft, IconUpload, IconFileSpreadsheet, IconDownload, IconCheck, IconX } from "@tabler/icons-react"
 import Link from "next/link"
 import * as XLSX from "xlsx"
+
+const STAGE_LABELS: Record<string, string> = {
+  new: "New",
+  contacted: "Contacted",
+  qualified: "Qualified",
+  proposal: "Proposal",
+  negotiation: "Negotiation",
+  closed_won: "Closed Won",
+  closed_lost: "Closed Lost",
+}
+
+const STAGE_ALIASES: Record<string, string> = {
+  new: "new",
+  contacted: "contacted",
+  qualified: "qualified",
+  proposal: "proposal",
+  negotiation: "negotiation",
+  "closed won": "closed_won",
+  closed_won: "closed_won",
+  won: "closed_won",
+  "closed lost": "closed_lost",
+  closed_lost: "closed_lost",
+  lost: "closed_lost",
+}
+
+const VALID_CURRENCIES = ["USD", "INR"]
 
 interface PreviewRow {
   row: number
@@ -21,6 +46,8 @@ interface PreviewRow {
   stage: string
   value: number
   currency: string
+  valid: boolean
+  warnings: string[]
 }
 
 interface UploadResult {
@@ -34,6 +61,7 @@ export default function UploadLeadsPage() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<PreviewRow[]>([])
+  const [totalRows, setTotalRows] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [result, setResult] = useState<UploadResult | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -44,19 +72,35 @@ export default function UploadLeadsPage() {
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
     const rows: Record<string, string>[] = XLSX.utils.sheet_to_json(sheet, { defval: "" })
 
-    const previewData: PreviewRow[] = rows.slice(0, 10).map((row, i) => ({
-      row: i + 2,
-      name: (row.Name || row.name || row["Lead Name"] || "").toString().trim(),
-      company: (row.Company || row.company || "").toString().trim(),
-      email: (row.Email || row.email || "").toString().trim(),
-      phone: (row.Phone || row.phone || "").toString().trim(),
-      stage: (row.Stage || row.stage || "new").toString().trim(),
-      value: Number(row.Value || row.value || row["Deal Value"] || 0),
-      currency: (row.Currency || row.currency || "INR").toString().trim().toUpperCase(),
-    }))
+    const allRows = rows.map((row, i) => {
+      const rowNum = i + 2
+      const warnings: string[] = []
+      const name = (row.Name || row.name || row["Lead Name"] || "").toString().trim()
+      const company = (row.Company || row.company || "").toString().trim()
+      const rawStage = (row.Stage || row.stage || "new").toString().trim().toLowerCase()
+      const resolvedStage = STAGE_ALIASES[rawStage] || rawStage
+      if (!STAGE_ALIASES[rawStage]) warnings.push(`Unrecognised stage "${rawStage}"`)
+      const rawCurrency = (row.Currency || row.currency || "INR").toString().trim().toUpperCase()
+      if (!VALID_CURRENCIES.includes(rawCurrency)) warnings.push(`Unrecognised currency "${rawCurrency}"`)
+      const valid = !!name && !!company && !!STAGE_ALIASES[rawStage] && VALID_CURRENCIES.includes(rawCurrency)
+
+      return {
+        row: rowNum,
+        name,
+        company,
+        email: (row.Email || row.email || "").toString().trim(),
+        phone: (row.Phone || row.phone || "").toString().trim(),
+        stage: resolvedStage,
+        value: Number(row.Value || row.value || row["Deal Value"] || 0),
+        currency: rawCurrency,
+        valid,
+        warnings,
+      }
+    })
 
     setFile(f)
-    setPreview(previewData)
+    setPreview(allRows.slice(0, 10))
+    setTotalRows(allRows.length)
     setResult(null)
   }, [])
 
@@ -109,12 +153,19 @@ export default function UploadLeadsPage() {
       })
 
       const data = await res.json()
+
+      if (!res.ok) {
+        toast.error(data.error || "Upload failed")
+        setResult({ created: 0, skipped: 0, errors: [data.error || "Upload failed"] })
+        return
+      }
+
       setResult(data)
 
       if (data.created > 0) {
         toast.success(`${data.created} leads created`)
       }
-      if (data.errors.length > 0) {
+      if (data.skipped > 0) {
         toast.error(`${data.skipped} rows skipped`)
       }
     } catch {
@@ -179,7 +230,7 @@ export default function UploadLeadsPage() {
               <Separator />
               <div>
                 <p className="text-xs font-medium mb-2">
-                  Preview ({preview.length} of {file ? "first rows" : "0"} shown)
+                  Preview (first {preview.length} of {totalRows} rows)
                 </p>
                 <div className="overflow-x-auto rounded-sm border">
                   <table className="w-full text-xs">
@@ -190,21 +241,36 @@ export default function UploadLeadsPage() {
                         <th className="text-left p-2 font-medium">Stage</th>
                         <th className="text-right p-2 font-medium">Value</th>
                         <th className="text-left p-2 font-medium">Currency</th>
+                        <th className="text-left p-2 font-medium">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {preview.map((row) => (
-                        <tr key={row.row} className="border-t">
+                        <tr key={row.row} className={`border-t ${!row.valid ? "bg-destructive/5" : ""}`}>
                           <td className="p-2">{row.name}</td>
                           <td className="p-2">{row.company}</td>
-                          <td className="p-2 capitalize">{row.stage}</td>
+                          <td className="p-2 capitalize">{STAGE_LABELS[row.stage] || row.stage}</td>
                           <td className="p-2 text-right">{row.value.toLocaleString()}</td>
                           <td className="p-2">{row.currency}</td>
+                          <td className="p-2">
+                            {row.warnings.length > 0 ? (
+                              <span className="text-[10px] text-destructive" title={row.warnings.join(". ")}>
+                                {row.warnings.length} issue{row.warnings.length > 1 ? "s" : ""}
+                              </span>
+                            ) : (
+                              <IconCheck className="size-3 text-emerald-500" />
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+                {totalRows > 10 && (
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    + {totalRows - 10} more rows
+                  </p>
+                )}
               </div>
 
               <Button
@@ -218,7 +284,7 @@ export default function UploadLeadsPage() {
                 ) : (
                   <>
                     <IconUpload className="size-3.5" />
-                    Upload {preview.length}+ Leads
+                    Upload {totalRows} Leads
                   </>
                 )}
               </Button>
@@ -249,9 +315,14 @@ export default function UploadLeadsPage() {
                     ))}
                   </div>
                 )}
-                <Button size="sm" variant="outline" onClick={() => router.push("/pipeline")}>
-                  View Pipeline
-                </Button>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => router.push("/pipeline")}>
+                    View Pipeline
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => router.push("/leads")}>
+                    View Leads
+                  </Button>
+                </div>
               </div>
             </>
           )}
