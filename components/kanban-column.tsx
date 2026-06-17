@@ -27,11 +27,11 @@ export function KanbanColumn({ id, label, color, leads }: KanbanColumnProps) {
     <div
       ref={setNodeRef}
       className={cn(
-        "flex shrink-0 flex-col gap-3 w-64 rounded-sm border bg-muted/30 p-3 transition-colors",
+        "flex shrink-0 flex-col w-64 rounded-sm border bg-muted/30 p-3 transition-colors max-h-full",
         isOver && "bg-muted/60",
       )}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <span className={cn("size-2 rounded-full", color)} />
           <span className="text-xs font-medium">{label}</span>
@@ -39,7 +39,7 @@ export function KanbanColumn({ id, label, color, leads }: KanbanColumnProps) {
         <span className="text-xs text-muted-foreground">{leads.length}</span>
       </div>
       <SortableContext items={leads.map((l) => l._id)} strategy={verticalListSortingStrategy}>
-        <div className="flex flex-col gap-2 min-h-[120px]">
+        <div className="flex flex-col gap-2 min-h-[80px] overflow-y-auto flex-1 mt-3">
           {leads.map((lead) => (
             <KanbanCard key={lead._id} lead={lead} />
           ))}

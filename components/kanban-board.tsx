@@ -141,7 +141,7 @@ export function KanbanBoard({ userId }: { userId?: string }) {
 
   if (loading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex gap-4 overflow-x-auto pb-4 h-full">
         {STAGES.map((stage) => (
           <div key={stage.key} className="flex shrink-0 flex-col gap-3 w-64">
             <Skeleton className="h-8 w-full" />
@@ -155,8 +155,8 @@ export function KanbanBoard({ userId }: { userId?: string }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="h-full flex flex-col min-h-0">
+      <div className="flex items-center justify-between shrink-0 mb-4">
         <h1 className="text-lg font-medium">Sales Pipeline</h1>
         <Button asChild size="sm">
           <Link href="/leads/new">
@@ -171,7 +171,7 @@ export function KanbanBoard({ userId }: { userId?: string }) {
         onDragStart={(event: DragStartEvent) => setActiveId(event.active.id as string)}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-4 overflow-x-auto flex-1 min-h-0 pb-4">
           {STAGES.map((stage) => (
             <KanbanColumn
               key={stage.key}
