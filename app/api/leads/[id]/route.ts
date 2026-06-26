@@ -129,8 +129,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await auth()
-  if (!session || session.user.role !== "super_admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const { id } = await params

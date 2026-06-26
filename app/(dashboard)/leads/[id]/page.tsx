@@ -188,7 +188,7 @@ export default function LeadDetailPage() {
 
   const isOwner = lead?.assignedTo?._id === session?.user?.id
   const canEdit = session?.user?.role !== "employee" || isOwner
-  const canDelete = session?.user?.role === "super_admin"
+  const canDelete = !!session?.user
   const currencySymbol = CURRENCY_SYMBOLS[lead?.currency || "INR"] || "₹"
 
   async function handleSave() {
