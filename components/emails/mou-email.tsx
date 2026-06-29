@@ -1,0 +1,171 @@
+import {
+  Html,
+  Head,
+  Body,
+  Container,
+  Section,
+  Text,
+  Button,
+  Img,
+  Hr,
+} from "@react-email/components"
+
+interface MOUEmailProps {
+  name: string
+  date: string
+  appUrl: string
+  mouId: string
+}
+
+export function MOUEmail({ name, date, appUrl, mouId }: MOUEmailProps) {
+  return (
+    <Html>
+      <Head />
+      <Body style={main}>
+        <Container style={container}>
+          <Section style={header}>
+            <Img
+              src={`${appUrl}/logo-dark.svg`}
+              alt="SWRK"
+              width="80"
+              height="24"
+              style={logo}
+            />
+          </Section>
+          <Section style={content}>
+            <Text style={title}>Business Development Associate Agreement</Text>
+            <Text style={greeting}>Dear {name},</Text>
+            <Text style={paragraph}>
+              Thank you for your interest in partnering with SWRK as a Business
+              Development Associate. We are pleased to share the Referral &
+              Business Development Associate Agreement for your review.
+            </Text>
+            <Text style={paragraph}>
+              This agreement outlines the terms of our commission-based business
+              relationship, including lead ownership, commission structure, and
+              payment terms.
+            </Text>
+            <Text style={paragraph}>
+              <strong>Date:</strong> {date}
+            </Text>
+            <Section style={buttonContainer}>
+              <Button href={`${appUrl}/api/mous/${mouId}/download`} style={button}>
+                View Agreement
+              </Button>
+            </Section>
+            <Text style={paragraph}>
+              Please review the agreement at your convenience. If you have any
+              questions, feel free to reach out.
+            </Text>
+            <Text style={paragraph}>Best regards,</Text>
+            <Text style={signature}>
+              <strong>Ansh Kaushal</strong>
+              <br />
+              Founder, SWRK
+            </Text>
+          </Section>
+          <Hr style={hr} />
+          <Section style={footer}>
+            <Text style={footerText}>
+              SWRK — Software Development & Consulting
+              <br />
+              {appUrl}
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  )
+}
+
+const main = {
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  backgroundColor: "#f5f5f5",
+  margin: "0",
+  padding: "0",
+}
+
+const container = {
+  maxWidth: "520px",
+  margin: "0 auto",
+  padding: "32px 0",
+}
+
+const header = {
+  backgroundColor: "#ffffff",
+  padding: "24px 32px",
+  borderTopLeftRadius: "8px",
+  borderTopRightRadius: "8px",
+  borderBottom: "1px solid #e5e5e5",
+}
+
+const logo = {
+  margin: "0",
+}
+
+const content = {
+  backgroundColor: "#ffffff",
+  padding: "32px",
+}
+
+const title = {
+  fontSize: "18px",
+  fontWeight: "600",
+  color: "#111111",
+  margin: "0 0 20px 0",
+}
+
+const greeting = {
+  fontSize: "14px",
+  color: "#333333",
+  margin: "0 0 12px 0",
+}
+
+const paragraph = {
+  fontSize: "14px",
+  color: "#555555",
+  lineHeight: "1.6",
+  margin: "0 0 12px 0",
+}
+
+const buttonContainer = {
+  textAlign: "center" as const,
+  margin: "24px 0",
+}
+
+const button = {
+  backgroundColor: "#111111",
+  color: "#ffffff",
+  fontSize: "14px",
+  fontWeight: "500",
+  padding: "12px 32px",
+  borderRadius: "4px",
+  textDecoration: "none",
+  display: "inline-block",
+}
+
+const signature = {
+  fontSize: "14px",
+  color: "#333333",
+  margin: "0",
+}
+
+const hr = {
+  borderColor: "#e5e5e5",
+  margin: "0",
+}
+
+const footer = {
+  backgroundColor: "#ffffff",
+  padding: "16px 32px",
+  borderBottomLeftRadius: "8px",
+  borderBottomRightRadius: "8px",
+}
+
+const footerText = {
+  fontSize: "11px",
+  color: "#999999",
+  margin: "0",
+  textAlign: "center" as const,
+}

@@ -119,7 +119,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto space-y-6">
+    <div className="max-w-lg mx-auto space-y-6 w-full">
       {mustChangePassword && (
         <Card className="border-amber-500">
           <CardHeader>

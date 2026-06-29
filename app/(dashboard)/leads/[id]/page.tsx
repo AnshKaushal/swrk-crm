@@ -316,7 +316,7 @@ export default function LeadDetailPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
+    <div className="max-w-2xl mx-auto space-y-4 w-full">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" asChild>
           <Link href="/pipeline" className="flex items-center gap-1">

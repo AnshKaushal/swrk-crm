@@ -1,5 +1,15 @@
 import mongoose from "mongoose"
 
+// Ensure all models are registered
+import "@/lib/models/User"
+import "@/lib/models/Lead"
+import "@/lib/models/MOU"
+import "@/lib/models/Notification"
+import "@/lib/models/Comment"
+import "@/lib/models/AuditLog"
+import "@/lib/models/PushSubscription"
+import "@/lib/models/Payment"
+
 interface MongooseCache {
   conn: typeof mongoose | null
   promise: Promise<typeof mongoose> | null

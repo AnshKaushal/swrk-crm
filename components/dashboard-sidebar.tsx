@@ -13,6 +13,8 @@ import {
   IconX,
   IconReportMoney,
   IconUserSearch,
+  IconFileDescription,
+  IconSend,
 } from "@tabler/icons-react"
 
 const navItems = [
@@ -38,6 +40,18 @@ const navItems = [
     href: "/revenue",
     label: "Revenue",
     icon: IconReportMoney,
+    roles: ["super_admin"],
+  },
+  {
+    href: "/mous",
+    label: "BDE Agreements",
+    icon: IconFileDescription,
+    roles: ["super_admin"],
+  },
+  {
+    href: "/send-email",
+    label: "Send Email",
+    icon: IconSend,
     roles: ["super_admin"],
   },
   { href: "/users", label: "Users", icon: IconUsers, roles: ["super_admin"] },

@@ -3,11 +3,24 @@
 import { useState, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { IconArrowLeft, IconUpload, IconFileSpreadsheet, IconDownload, IconCheck, IconX } from "@tabler/icons-react"
+import {
+  IconArrowLeft,
+  IconUpload,
+  IconFileSpreadsheet,
+  IconDownload,
+  IconCheck,
+  IconX,
+} from "@tabler/icons-react"
 import Link from "next/link"
 import * as XLSX from "xlsx"
 
@@ -70,19 +83,35 @@ export default function UploadLeadsPage() {
     const buffer = await f.arrayBuffer()
     const workbook = XLSX.read(buffer, { type: "array" })
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const rows: Record<string, string>[] = XLSX.utils.sheet_to_json(sheet, { defval: "" })
+    const rows: Record<string, string>[] = XLSX.utils.sheet_to_json(sheet, {
+      defval: "",
+    })
 
     const allRows = rows.map((row, i) => {
       const rowNum = i + 2
       const warnings: string[] = []
-      const name = (row.Name || row.name || row["Lead Name"] || "").toString().trim()
+      const name = (row.Name || row.name || row["Lead Name"] || "")
+        .toString()
+        .trim()
       const company = (row.Company || row.company || "").toString().trim()
-      const rawStage = (row.Stage || row.stage || "new").toString().trim().toLowerCase()
+      const rawStage = (row.Stage || row.stage || "new")
+        .toString()
+        .trim()
+        .toLowerCase()
       const resolvedStage = STAGE_ALIASES[rawStage] || rawStage
-      if (!STAGE_ALIASES[rawStage]) warnings.push(`Unrecognised stage "${rawStage}"`)
-      const rawCurrency = (row.Currency || row.currency || "INR").toString().trim().toUpperCase()
-      if (!VALID_CURRENCIES.includes(rawCurrency)) warnings.push(`Unrecognised currency "${rawCurrency}"`)
-      const valid = !!name && !!company && !!STAGE_ALIASES[rawStage] && VALID_CURRENCIES.includes(rawCurrency)
+      if (!STAGE_ALIASES[rawStage])
+        warnings.push(`Unrecognised stage "${rawStage}"`)
+      const rawCurrency = (row.Currency || row.currency || "INR")
+        .toString()
+        .trim()
+        .toUpperCase()
+      if (!VALID_CURRENCIES.includes(rawCurrency))
+        warnings.push(`Unrecognised currency "${rawCurrency}"`)
+      const valid =
+        !!name &&
+        !!company &&
+        !!STAGE_ALIASES[rawStage] &&
+        VALID_CURRENCIES.includes(rawCurrency)
 
       return {
         row: rowNum,
@@ -156,7 +185,11 @@ export default function UploadLeadsPage() {
 
       if (!res.ok) {
         toast.error(data.error || "Upload failed")
-        setResult({ created: 0, skipped: 0, errors: [data.error || "Upload failed"] })
+        setResult({
+          created: 0,
+          skipped: 0,
+          errors: [data.error || "Upload failed"],
+        })
         return
       }
 
@@ -176,7 +209,7 @@ export default function UploadLeadsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
+    <div className="max-w-2xl mx-auto space-y-4 w-full">
       <div>
         <Button variant="ghost" size="sm" asChild className="mb-2">
           <Link href="/leads" className="flex items-center gap-1">
@@ -191,7 +224,8 @@ export default function UploadLeadsPage() {
         <CardHeader>
           <CardTitle className="text-sm">Upload Spreadsheet</CardTitle>
           <CardDescription className="text-xs">
-            Upload a .xlsx or .xls file with columns: Name, Company, Email, Phone, Stage, Value, Currency, Notes
+            Upload a .xlsx or .xls file with columns: Name, Company, Email,
+            Phone, Stage, Value, Currency, Notes
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -203,19 +237,28 @@ export default function UploadLeadsPage() {
           </div>
 
           <div
-            onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+            onDragOver={(e) => {
+              e.preventDefault()
+              setDragging(true)
+            }}
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
             className={`flex cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed p-8 transition-colors ${
-              dragging ? "border-primary bg-primary/5" : "border-muted-foreground/25"
+              dragging
+                ? "border-primary bg-primary/5"
+                : "border-muted-foreground/25"
             }`}
           >
             <IconFileSpreadsheet className="size-8 text-muted-foreground mb-2" />
             <p className="text-sm font-medium">
-              {file ? file.name : "Drop your spreadsheet here or click to browse"}
+              {file
+                ? file.name
+                : "Drop your spreadsheet here or click to browse"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">.xlsx or .xls files only</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              .xlsx or .xls files only
+            </p>
             <input
               ref={inputRef}
               type="file"
@@ -246,16 +289,27 @@ export default function UploadLeadsPage() {
                     </thead>
                     <tbody>
                       {preview.map((row) => (
-                        <tr key={row.row} className={`border-t ${!row.valid ? "bg-destructive/5" : ""}`}>
+                        <tr
+                          key={row.row}
+                          className={`border-t ${!row.valid ? "bg-destructive/5" : ""}`}
+                        >
                           <td className="p-2">{row.name}</td>
                           <td className="p-2">{row.company}</td>
-                          <td className="p-2 capitalize">{STAGE_LABELS[row.stage] || row.stage}</td>
-                          <td className="p-2 text-right">{row.value.toLocaleString()}</td>
+                          <td className="p-2 capitalize">
+                            {STAGE_LABELS[row.stage] || row.stage}
+                          </td>
+                          <td className="p-2 text-right">
+                            {row.value.toLocaleString()}
+                          </td>
                           <td className="p-2">{row.currency}</td>
                           <td className="p-2">
                             {row.warnings.length > 0 ? (
-                              <span className="text-[10px] text-destructive" title={row.warnings.join(". ")}>
-                                {row.warnings.length} issue{row.warnings.length > 1 ? "s" : ""}
+                              <span
+                                className="text-[10px] text-destructive"
+                                title={row.warnings.join(". ")}
+                              >
+                                {row.warnings.length} issue
+                                {row.warnings.length > 1 ? "s" : ""}
                               </span>
                             ) : (
                               <IconCheck className="size-3 text-emerald-500" />
@@ -302,7 +356,10 @@ export default function UploadLeadsPage() {
                     {result.created} created
                   </Badge>
                   {result.skipped > 0 && (
-                    <Badge variant="outline" className="gap-1 text-[10px] border-amber-500 text-amber-500">
+                    <Badge
+                      variant="outline"
+                      className="gap-1 text-[10px] border-amber-500 text-amber-500"
+                    >
                       <IconX className="size-3" />
                       {result.skipped} skipped
                     </Badge>
@@ -311,15 +368,25 @@ export default function UploadLeadsPage() {
                 {result.errors.length > 0 && (
                   <div className="max-h-32 overflow-y-auto rounded-sm border p-2">
                     {result.errors.map((err, i) => (
-                      <p key={i} className="text-[10px] text-destructive">{err}</p>
+                      <p key={i} className="text-[10px] text-destructive">
+                        {err}
+                      </p>
                     ))}
                   </div>
                 )}
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => router.push("/pipeline")}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => router.push("/pipeline")}
+                  >
                     View Pipeline
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => router.push("/leads")}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => router.push("/leads")}
+                  >
                     View Leads
                   </Button>
                 </div>

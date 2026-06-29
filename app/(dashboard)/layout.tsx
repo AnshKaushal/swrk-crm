@@ -21,7 +21,7 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col min-w-0">
         <NotificationBanner />
         <DashboardHeader onMenuClick={() => setSidebarOpen(true)} />
-        <main className="flex-1 min-h-0 p-4 md:p-6 flex flex-col overflow-y-auto">{children}</main>
+        <main className="flex-1 min-h-0 p-4 md:p-6 flex flex-col overflow-y-auto w-full">{children}</main>
       </div>
     </div>
   )

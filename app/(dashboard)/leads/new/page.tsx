@@ -92,7 +92,7 @@ export default function NewLeadPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto space-y-4">
+    <div className="max-w-lg mx-auto space-y-4 w-full">
       <div>
         <Button variant="ghost" size="sm" asChild className="mb-2">
           <Link href="/pipeline" className="flex items-center gap-1">

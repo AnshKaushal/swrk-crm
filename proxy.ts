@@ -15,7 +15,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/users") ||
     pathname.startsWith("/employees") ||
     pathname.startsWith("/settings") ||
-    pathname.startsWith("/revenue")
+    pathname.startsWith("/revenue") ||
+    pathname.startsWith("/mous") ||
+    pathname.startsWith("/send-email")
 
   if (isApiAuth) return NextResponse.next()
 
@@ -28,6 +30,10 @@ export async function proxy(request: NextRequest) {
   }
 
   if (session && pathname.startsWith("/users") && session.user.role !== "super_admin") {
+    return NextResponse.redirect(new URL("/pipeline", request.url))
+  }
+
+  if (session && (pathname.startsWith("/mous") || pathname.startsWith("/send-email")) && session.user.role !== "super_admin") {
     return NextResponse.redirect(new URL("/pipeline", request.url))
   }
 
