@@ -38,7 +38,7 @@ export async function GET(
     return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 })
   }
 
-  return new NextResponse(pdfBuffer, {
+  return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="SWRK-BDE-Agreement-${mou.name.replace(/\s+/g, "-")}.pdf"`,
