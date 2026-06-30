@@ -92,7 +92,7 @@ export default function NewUserPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto space-y-4">
+    <div className="max-w-lg mx-auto space-y-4 w-full">
       <div>
         <Button variant="ghost" size="sm" asChild className="mb-2">
           <Link href="/users" className="flex items-center gap-1">
