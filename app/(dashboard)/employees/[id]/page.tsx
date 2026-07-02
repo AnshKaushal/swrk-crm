@@ -2,11 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { KanbanBoard } from "@/components/kanban-board"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { IconArrowLeft } from "@tabler/icons-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { IconArrowLeft, IconCash, IconCircleCheck, IconClock } from "@tabler/icons-react"
 import { toast } from "sonner"
 
 function formatCurrency(value: number, currency: "INR" | "USD" = "INR") {
@@ -61,18 +71,37 @@ interface Stats {
   payments: PaymentBreakdown[]
 }
 
+interface Commission {
+  _id: string
+  dealName: string
+  dealValue: number
+  paymentAmount: number
+  commissionRate: number
+  commissionAmount: number
+  currency: string
+  status: "pending" | "paid"
+  createdAt: string
+  paidDate?: string
+}
+
 export default function EmployeeDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { data: session } = useSession()
   const [employee, setEmployee] = useState<Employee | null>(null)
   const [stats, setStats] = useState<Stats | null>(null)
+  const [commissions, setCommissions] = useState<Commission[]>([])
   const [loading, setLoading] = useState(true)
+  const [commLoading, setCommLoading] = useState(true)
+
+  const isSuperAdmin = session?.user?.role === "super_admin"
 
   const fetchData = useCallback(async () => {
     try {
-      const [empRes, statsRes] = await Promise.all([
+      const [empRes, statsRes, commRes] = await Promise.all([
         fetch(`/api/users/${params.id}`),
         fetch(`/api/employees/${params.id}/stats`),
+        fetch(`/api/commissions?userId=${params.id}`),
       ])
       if (empRes.status === 403 || statsRes.status === 403) {
         router.push("/pipeline")
@@ -83,10 +112,16 @@ export default function EmployeeDetailPage() {
 
       const statsData = await statsRes.json()
       setStats(statsData)
+
+      if (commRes.ok) {
+        const commData = await commRes.json()
+        setCommissions(commData)
+      }
     } catch {
       toast.error("Failed to load employee data")
     } finally {
       setLoading(false)
+      setCommLoading(false)
     }
   }, [params.id, router])
 
@@ -180,6 +215,81 @@ export default function EmployeeDetailPage() {
             ))}
           </div>
         </div>
+      )}
+
+      {!commLoading && commissions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm flex items-center gap-2">
+              <IconCash className="size-4" />
+              Commissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Deal</TableHead>
+                  <TableHead>Deal Value</TableHead>
+                  <TableHead>Amount Received</TableHead>
+                  <TableHead>Rate</TableHead>
+                  <TableHead>Commission</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  {isSuperAdmin && <TableHead>Action</TableHead>}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {commissions.map((c) => (
+                  <TableRow key={c._id}>
+                    <TableCell className="font-medium">{c.dealName}</TableCell>
+                    <TableCell>{formatCurrency(c.dealValue, c.currency as "INR" | "USD")}</TableCell>
+                    <TableCell>{formatCurrency(c.paymentAmount, c.currency as "INR" | "USD")}</TableCell>
+                    <TableCell>{c.commissionRate}%</TableCell>
+                    <TableCell className="font-medium">
+                      {formatCurrency(c.commissionAmount, c.currency as "INR" | "USD")}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={c.status === "paid" ? "default" : "secondary"}>
+                        {c.status === "paid" ? "Disbursed" : "Pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(c.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    {isSuperAdmin && (
+                      <TableCell>
+                        {c.status === "pending" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-[10px]"
+                            onClick={async () => {
+                              try {
+                                const res = await fetch("/api/commissions", {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ commissionId: c._id, status: "paid" }),
+                                })
+                                if (!res.ok) throw new Error()
+                                toast.success("Commission marked as paid")
+                                fetchData()
+                              } catch {
+                                toast.error("Failed to update commission")
+                              }
+                            }}
+                          >
+                            Pay
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
 
       <div>

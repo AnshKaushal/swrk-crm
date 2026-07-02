@@ -15,6 +15,7 @@ import {
   IconUserSearch,
   IconFileDescription,
   IconSend,
+  IconCash,
 } from "@tabler/icons-react"
 
 const navItems = [
@@ -41,6 +42,12 @@ const navItems = [
     label: "Revenue",
     icon: IconReportMoney,
     roles: ["super_admin"],
+  },
+  {
+    href: "/earnings",
+    label: "Earnings",
+    icon: IconCash,
+    roles: ["super_admin", "admin", "manager", "employee"],
   },
   {
     href: "/mous",
